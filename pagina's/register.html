@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <title>Registreren</title>
+    <link rel="stylesheet" href="../css/auth.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hubot+Sans:ital,wght@0,200..900;1,200..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="background">
+
+
+    <div class="login-container">
+
+        <img src="../img/logo.png" alt="Logo" class="logo">
+
+        <h1>Registreren</h1>
+
+        <form action="register.php" method="POST">
+
+            <label>Gebruikersnaam</label>
+            <input type="text" name="username" required>
+
+            <label>E-mailadres</label>
+            <input type="email" name="email" required>
+
+            <label>Wachtwoord</label>
+            <input type="password" name="password" required>
+
+            <button type="submit">Registreren</button>
+
+        </form>
+
+        <a href="index.html">terug naar inloggen</a>
+
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,135 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family: "Hubot Sans", sans-serif;
+    background:#E9F5DB;
+}
+
+/* HEADER */
+
+header{
+    background:#7f9461;
+    height:110px;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:0 25px;
+}
+
+.logo img{
+    width:90px;
+}
+
+nav{
+    display:flex;
+    gap:30px;
+}
+
+nav a{
+    text-decoration:none;
+    color:black;
+    font-size:20px;
+}
+/* TITEL */
+
+.titel{
+    height:120px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.titel h1{
+    font-size:42px;
+    font-weight:normal;
+}
+
+/* CATEGORIEËN */
+
+.categorieen{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+}
+
+.categorieen button{
+    background:#b7c79f;
+    border:1px solid #666;
+    padding:10px;
+    font-size:22px;
+    cursor:pointer;
+}
+
+.categorieen button:hover{
+    background:#9eb180;
+}
+
+/* RECEPTEN */
+
+.favorieten-grid{
+    max-width:1000px;
+    margin:40px auto;
+
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:60px;
+}
+
+.gerecht{
+    text-align:center;
+}
+
+.gerecht img{
+    width:300px;
+    height:200px;
+    object-fit:cover;
+    border:1px solid #444;
+}
+
+.gerecht h2{
+    font-size:34px;
+    font-weight:normal;
+    margin:10px 0;
+}
+
+.gerecht p{
+    max-width:300px;
+    margin:5px auto;
+    line-height:1.5;
+    font-size:14px;
+}
+
+/* FOOTER */
+
+footer{
+    height:70px;
+    background:#829665;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:768px){
+
+    .favorieten-grid{
+        grid-template-columns:1fr;
+    }
+
+    nav{
+        flex-wrap:wrap;
+        justify-content:center;
+    }
+
+    .titel h1{
+        font-size:30px;
+    }
+
+    .gerecht img{
+        width:100%;
+        max-width:320px;
+    }
+}

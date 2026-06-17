@@ -5,7 +5,7 @@
 }
 
 body{
-    font-family: Arial, sans-serif;
+    font-family: "Hubot Sans", sans-serif;
     background:#f5f5f5;
 }
 
@@ -71,12 +71,17 @@ nav a{
 
 .cards{
     display:flex;
+    font-family: "Hubot Sans", sans-serif;
     justify-content:space-evenly;
     padding:40px 20px;
 }
 
 .card{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
     text-align:center;
+    gap:15px;
 }
 
 .card img{
@@ -84,10 +89,11 @@ nav a{
     height:180px;
     object-fit:cover;
     border:1px solid black;
+    display:block;
 }
 
 .card button{
-    margin-top:15px;
+    font-family: "Hubot Sans", sans-serif;
     background:#a6bc7d;
     border:none;
     padding:10px 25px;
@@ -103,6 +109,7 @@ nav a{
 /* FOOTER */
 
 footer{
+    font-family: "Hubot Sans", sans-serif;
     background:#7f9461;
     height:120px;
 
@@ -114,6 +121,7 @@ footer{
 }
 
 .admin-btn{
+    font-family: "Hubot Sans", sans-serif;
     background:#d9e3c4;
     border:none;
     padding:10px 25px;
