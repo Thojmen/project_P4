@@ -18,7 +18,7 @@
         </div>
 
         <nav>
-            <a href="home.php">Home</a>
+            <a href="index.php">Home</a>
             <a href="ideeën.php">Ideeën voor vanavond</a>
             <a href="recepten.php">Recepten</a>
             <a href="favorieten.php">Favorieten</a>
@@ -59,7 +59,7 @@
 
     <!-- Footer -->
     <footer>
-        <button class="admin-btn">Admin</button>
+        <a href="./admin/dashboard.php"><button class="admin-btn">Admin</button></a>
     </footer>
 
 </body>

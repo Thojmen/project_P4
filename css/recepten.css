@@ -115,6 +115,11 @@ nav a{
     line-height:1.5;
 }
 
+footer{
+    height:70px;
+    background:#829665;
+}
+
 /* RESPONSIVE */
 
 @media(max-width:900px){

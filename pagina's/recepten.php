@@ -113,5 +113,9 @@
 
 </div>
 
+    <footer>
+        <a href="./admin/dashboard.php"><button class="admin-btn">Admin</button></a>
+    </footer>
+
 </body>
 </html>
