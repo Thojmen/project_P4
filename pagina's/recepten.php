@@ -1,3 +1,136 @@
+<?php
+
+require 'db.php';
+
+$sql = "SELECT * FROM recipes ORDER BY title";
+
+$result = $conn->query($sql);
+
+$where = [];
+
+if(!empty($_GET['category'])){
+
+    $category =
+        $conn->real_escape_string(
+            $_GET['category']
+        );
+
+    $where[] =
+        "category = '$category'";
+}
+
+$sql = "SELECT * FROM recipes";
+
+if(count($where) > 0){
+    $sql .= " WHERE " . implode(" AND ", $where);
+}
+
+$result = $conn->query($sql);
+
+$allergies = $conn->query("
+    SELECT *
+    FROM allergies
+    ORDER BY name
+");
+
+$where = [];
+$params = [];
+$types = "";
+
+if(!empty($_GET['search'])){
+
+    $where[] = "title LIKE ?";
+
+    $params[] =
+        "%" . $_GET['search'] . "%";
+
+    $types .= "s";
+}
+
+if(!empty($_GET['category'])){
+
+    $where[] = "category = ?";
+
+    $params[] = $_GET['category'];
+
+    $types .= "s";
+}
+
+if(!empty($_GET['servings'])){
+
+    $where[] = "servings >= ?";
+
+    $params[] = (int)$_GET['servings'];
+
+    $types .= "i";
+}
+
+if(!empty($_GET['price'])){
+
+    $where[] = "estimated_cost <= ?";
+
+    $params[] = (float)$_GET['price'];
+
+    $types .= "d";
+}
+
+if(
+    !empty($_GET['allergies'])
+){
+
+    $allergyIds =
+        array_map(
+            'intval',
+            $_GET['allergies']
+        );
+
+    $where[] = "
+    recipes.id NOT IN (
+
+        SELECT DISTINCT ri.recipe_id
+
+        FROM recipe_ingredients ri
+
+        JOIN ingredient_allergies ia
+        ON ri.ingredient_id = ia.ingredient_id
+
+        WHERE ia.allergy_id IN (
+            " .
+            implode(',', $allergyIds)
+            . "
+        )
+
+    )";
+}
+
+$sql = "
+SELECT *
+FROM recipes
+";
+
+if(count($where) > 0){
+
+    $sql .=
+        " WHERE "
+        . implode(" AND ", $where);
+}
+
+$stmt =
+$conn->prepare($sql);
+
+if(count($params) > 0){
+
+    $stmt->bind_param(
+        $types,
+        ...$params
+    );
+}
+
+$stmt->execute();
+
+$result =
+$stmt->get_result();
+?>
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -11,111 +144,135 @@
 </head>
 <body>
 
-<header>
-    <div class="logo">
-        <img src="../img/logo.png" alt="Green Cook">
+    <header>
+        <div class="logo">
+            <img src="../img/logo.png" alt="Green Cook">
+        </div>
+
+        <nav>
+            <a href="home.php">Home</a>
+            <a href="ideeën.php">Ideeën voor vanavond</a>
+            <a href="recepten.php">Recepten</a>
+            <a href="favorieten.php">Favorieten</a>
+        </nav>
+    </header>
+
+    <div class="container">
+
+    <div class="container">
+
+        <aside class="filters">
+
+            <form method="GET">
+
+                <h2>Filter op</h2>
+
+                <h3>Zoeken</h3>
+
+                <input
+                    type="text"
+                    name="search"
+                    placeholder="Zoek recept..."
+                >
+
+                <h3>Type maaltijd</h3>
+
+                <label>
+                    <input type="radio" name="category" value="avondeten">
+                    avondeten
+                </label>
+
+                <label>
+                    <input type="radio" name="category" value="lunch">
+                    lunch
+                </label>
+
+                <label>
+                    <input type="radio" name="category" value="ontbijt">
+                    ontbijt
+                </label>
+
+                <h3>Aantal personen</h3>
+
+                <input
+                    type="range"
+                    name="servings"
+                    min="1"
+                    max="10"
+                >
+
+                <h3>Prijs (€)</h3>
+
+                <input
+                    type="range"
+                    name="price"
+                    min="1"
+                    max="100"
+                >
+
+                <h3>Allergieën</h3>
+
+                <?php while($allergy = $allergies->fetch_assoc()): ?>
+
+                    <label>
+
+                        <input
+                            type="checkbox"
+                            name="allergies[]"
+                            value="<?= $allergy['id'] ?>"
+                        >
+
+                        <?= htmlspecialchars($allergy['name']) ?>
+
+                    </label>
+
+                <?php endwhile; ?>
+
+                <button type="submit">
+                    Filter toepassen
+                </button>
+
+            </form>
+
+        </aside>
+
+        <main class="recipes">
+
+            <?php while($recipe = $result->fetch_assoc()): ?>
+
+                <div class="recipe-card">
+
+                    <img
+                        src="<?= htmlspecialchars($recipe['image']) ?>"
+                        alt="<?= htmlspecialchars($recipe['title']) ?>"
+                    >
+
+                    <h2>
+                        <?= htmlspecialchars($recipe['title']) ?>
+                    </h2>
+
+                    <p>
+                        <?= htmlspecialchars($recipe['description']) ?>
+                    </p>
+
+                    <div class="recipe-meta">
+
+                        <span>
+                            <?= $recipe['servings'] ?> personen
+                        </span>
+
+                        <span>
+                            €<?= number_format($recipe['estimated_cost'],2) ?>
+                        </span>
+
+                    </div>
+
+                </div>
+
+            <?php endwhile; ?>
+
+        </main>
+
     </div>
-
-    <nav>
-        <a href="home.php">Home</a>
-        <a href="ideeën.php">Ideeën voor vanavond</a>
-        <a href="recepten.php">Recepten</a>
-        <a href="favorieten.php">Favorieten</a>
-    </nav>
-</header>
-
-<div class="container">
-
-    <aside class="filters">
-
-        <h2>Filter op</h2>
-
-        <h3>Type maaltijd</h3>
-
-        <label><input type="radio" name="meal"> avondeten</label>
-        <label><input type="radio" name="meal"> lunch</label>
-        <label><input type="radio" name="meal"> ontbijt</label>
-
-        <h3>Aantal personen</h3>
-
-        <div class="range-box">
-            <span>1</span>
-            <input type="range" min="1" max="10">
-            <span>10</span>
-        </div>
-
-        <h3>Prijs (€)</h3>
-
-        <div class="range-box">
-            <span>10</span>
-            <input type="range" min="10" max="100">
-            <span>100</span>
-        </div>
-
-        <h3>Allergieën</h3>
-
-        <label><input type="checkbox"> tarwe</label>
-        <label><input type="checkbox"> schaaldieren</label>
-        <label><input type="checkbox"> eieren</label>
-        <label><input type="checkbox"> vis</label>
-        <label><input type="checkbox"> noten</label>
-        <label><input type="checkbox"> soja</label>
-        <label><input type="checkbox"> pinda's</label>
-        <label><input type="checkbox"> melk</label>
-        <label><input type="checkbox"> selderij</label>
-        <label><input type="checkbox"> mosterd</label>
-        <label><input type="checkbox"> sesamzaad</label>
-        <label><input type="checkbox"> sulfieten</label>
-        <label><input type="checkbox"> lupine</label>
-        <label><input type="checkbox"> weekdieren</label>
-
-    </aside>
-
-    <main class="recipes">
-
-        <div class="recipe-card">
-            <img src="../img/recepten_1.png" alt="">
-            <h2>gerecht 1</h2>
-            <p>Korte beschrijving van het recept.</p>
-        </div>
-
-        <div class="recipe-card">
-            <img src="../img/recepten_2.png" alt="">
-            <h2>gerecht 2</h2>
-            <p>Korte beschrijving van het recept.</p>
-        </div>
-
-        <div class="recipe-card">
-            <img src="../img/recepten_3.png" alt="">
-            <h2>gerecht 3</h2>
-            <p>Korte beschrijving van het recept.</p>
-        </div>
-
-        <div class="recipe-card">
-            <img src="../img/recepten_4.png" alt="">
-            <h2>gerecht 4</h2>
-            <p>Korte beschrijving van het recept.</p>
-        </div>
-
-        <div class="recipe-card">
-            <img src="../img/recepten_5.png" alt="">
-            <h2>gerecht 5</h2>
-            <p>Korte beschrijving van het recept.</p>
-        </div>
-
-        <div class="recipe-card">
-            <img src="../img/recepten_6.png" alt="">
-            <h2>gerecht 6</h2>
-            <p>Korte beschrijving van het recept.</p>
-        </div>
-
-    </main>
-
-</div>
-
-    <footer>
-        <a href="./admin/dashboard.php"><button class="admin-btn">Admin</button></a>
-    </footer>
-
 </body>
 </html>
